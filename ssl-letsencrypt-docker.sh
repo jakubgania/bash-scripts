@@ -75,27 +75,27 @@ ENDOFFILE
 }
 
 run_staging_command_for_new_certificate () {
-docker run -it --rm \
--v /docker-volumes/etc/letsencrypt:/etc/letsencrypt \
--v /docker-volumes/var/lib/letsencrypt:/var/lib/letsencrypt \
--v /home/dexk/letsencrypt/site:/data/letsencrypt \
--v "/docker-volumes/var/log/letsencrypt:/var/log/letsencrypt" \
-certbot/certbot \
-certonly --webroot \
---register-unsafely-without-email --agree-tos \
---webroot-path=/data/letsencrypt \
---staging \
--d jakubgania.io -d www.jakubgania.io
+  docker run -it --rm \
+  -v /docker-volumes/etc/letsencrypt:/etc/letsencrypt \
+  -v /docker-volumes/var/lib/letsencrypt:/var/lib/letsencrypt \
+  -v /home/dexk/letsencrypt/site:/data/letsencrypt \
+  -v "/docker-volumes/var/log/letsencrypt:/var/log/letsencrypt" \
+  certbot/certbot \
+  certonly --webroot \
+  --register-unsafely-without-email --agree-tos \
+  --webroot-path=/data/letsencrypt \
+  --staging \
+  -d jakubgania.io -d www.jakubgania.io
 }
 
 get_additional_information_about_certificates () {
-sudo docker run --rm -it --name certbot \
--v /docker-volumes/etc/letsencrypt:/etc/letsencrypt \
--v /docker-volumes/var/lib/letsencrypt:/var/lib/letsencrypt \
--v /home/dexk/letsencrypt/site:/data/letsencrypt \
-certbot/certbot \
---staging \
-certificates
+  sudo docker run --rm -it --name certbot \
+  -v /docker-volumes/etc/letsencrypt:/etc/letsencrypt \
+  -v /docker-volumes/var/lib/letsencrypt:/var/lib/letsencrypt \
+  -v /home/dexk/letsencrypt/site:/data/letsencrypt \
+  certbot/certbot \
+  --staging \
+  certificates
 }
 
 stop_all_running_containers () {
