@@ -1,6 +1,7 @@
 #!/bin/bash -x
 
 EMAIL="example@email.com"
+PROJECT_NAME="letsencrypt"
 
 echo 'checking if the docker is installed'
 if [ ! -x "$(command -v docker)" ]; then
@@ -11,7 +12,6 @@ if [ ! -x "$(command -v docker)" ]; then
 docker -v
 
 # create project path
-PROJECT_NAME="letsencrypt"
 CURRENTLY_LOGGED_IN_USER="$(whoami)"
 PATH_FOR_PROJECT="/home/${CURRENTLY_LOGGED_IN_USER}/${PROJECT_NAME}"
 
@@ -89,7 +89,7 @@ cat > "${PATH_FOR_PROJECT}/nginx.conf" << ENDOFFILE
 server {
     listen 80;
     listen [::]:80;
-    server_name jakubgania.io www.jakubgania.io;
+    server_name example.com www.example.com;
 
     location ~ /.well-known/acme-challenge {
         allow all;
@@ -165,7 +165,7 @@ echo 'end command - dcoker-compose down'
 echo 'check directory exists - /docker-volumes'
 # rmove docker-volumes
 
-if [ -d "/docker-volumes"  ]; then
+if [ -d "/docker-volumes" ]; then
     echo "exsits"
 
     echo 'remove directory - /docker-columes'
