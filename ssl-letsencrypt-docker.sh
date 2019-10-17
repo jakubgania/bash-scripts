@@ -1,5 +1,15 @@
 #!/bin/bash -x
 
+EMAIL="example@email.com"
+
+echo 'checking if the docker is installed'
+if [ ! -x "$(command -v docker)" ]; then
+  echo 'docker is not installed'
+  exit 0
+
+# print docker version
+docker -v
+
 # create project path
 PROJECT_NAME="letsencrypt"
 CURRENTLY_LOGGED_IN_USER="$(whoami)"
@@ -20,14 +30,14 @@ fi
 
 # the function with the data to the file must be formatted in this way, otherwise it returns an error
 create_style_file () {
-cat > /home/dexk/letsencrypt/site/style.css << ENDOFFILE
+cat > "${PATH_FOR_PROJECT}/site/style.css" << ENDOFFILE
 style
 ENDOFFILE
 }
 
 # the function with the data to the file must be formatted in this way, otherwise it returns an error
 create_index_file () {
-cat > /home/dexk/letsencrypt/site/index.html << ENDOFFILE
+cat > "${PATH_FOR_PROJECT}/site/index.html" << ENDOFFILE
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -51,7 +61,7 @@ ENDOFFILE
 
 # the function with the data to the file must be formatted in this way, otherwise it returns an error
 create_docker_compose_file () {
-cat > /home/dexk/letsencrypt/docker-compose.yml << ENDOFFILE
+cat > "${PATH_FOR_PROJECT}/docker-compose.yml" << ENDOFFILE
 version: '3.1'
 
 services:
@@ -75,7 +85,7 @@ ENDOFFILE
 
 # the function with the data to the file must be formatted in this way, otherwise it returns an error
 create_nginx_config_file () {
-cat > /home/dexk/letsencrypt/nginx.conf << ENDOFFILE
+cat > "${PATH_FOR_PROJECT}/nginx.conf" << ENDOFFILE
 server {
     listen 80;
     listen [::]:80;
@@ -99,7 +109,7 @@ run_staging_command_for_new_certificate () {
   docker run -it --rm \
   -v /docker-volumes/etc/letsencrypt:/etc/letsencrypt \
   -v /docker-volumes/var/lib/letsencrypt:/var/lib/letsencrypt \
-  -v /home/dexk/letsencrypt/site:/data/letsencrypt \
+  -v "${PATH_FOR_PROJECT}/site:/data/letsencrypt" \
   -v "/docker-volumes/var/log/letsencrypt:/var/log/letsencrypt" \
   certbot/certbot \
   certonly --webroot \
@@ -113,14 +123,31 @@ get_additional_information_about_certificates () {
   sudo docker run --rm -it --name certbot \
   -v /docker-volumes/etc/letsencrypt:/etc/letsencrypt \
   -v /docker-volumes/var/lib/letsencrypt:/var/lib/letsencrypt \
-  -v /home/dexk/letsencrypt/site:/data/letsencrypt \
+  -v "${PATH_FOR_PROJECT}/site:/data/letsencrypt" \
   certbot/certbot \
   --staging \
   certificates
 }
 
 stop_all_running_containers () {
-  cd /home/dexk/letsencrypt && docker stop $(docker ps -aq) && docker rm $(docker ps -aq)
+  cd "${PATH_FOR_PROJECT}" && docker stop $(docker ps -aq) && docker rm $(docker ps -aq)
+}
+
+request_a_production_certificate () {
+  local domainWithoutWWW=$1
+  local domainWithWWW=$2
+  local email=$3
+
+  sudo docker run -it --rm \
+  -v /docker-volumes/etc/letsencrypt:/etc/letsencrypt \
+  -v /docker-volumes/var/lib/letsencrypt:/var/lib/letsencrypt \
+  -v "${PATH_FOR_PROJECT}/site:/data/letsencrypt" \
+  -v "/docker-volumes/var/log/letsencrypt:/var/log/letsencrypt" \
+  certbot/certbot \
+  certonly --webroot \
+  --email "$email" --agree-tos --no-eff-email \
+  --webroot-path=/data/letsencrypt \
+  -d "$domainWithoutWWW" -d "$domainWithWWW"
 }
 
 CURRENT_DIRECTORY=$(pwd)
@@ -147,23 +174,19 @@ else
     echo "not exists"
 fi
 
-if [ -d "/home/dexk/letsencrypt" ]; then
+if [ -d "$PATH_FOR_PROJECT" ]; then
     echo "directory exists"
 
-    echo 'remove directory - /home/dexk/letsencrypt'
-    rm -rf /home/dexk/letsencrypt
+    echo "remove directory - ${PATH_FOR_PROJECT}"
+    rm -rf "${PATH_FOR_PROJECT}"
 else
     echo "directory not exists"
 
-    echo "create directory - /home/dexk/letsencrypt"
-    mkdir /home/dexk/letsencrypt
+    echo "create directory - ${PATH_FOR_PROJECT}"
+    mkdir "$PATH_FOR_PROJECT"
 
-    echo "create directory - /home/dexk/letsencrypt/site"
-    mkdir /home/dexk/letsencrypt/site
-
-    #touch /home/dexk/letsencrypt/site
-
-    #cd /home/dexk/letsencrypt/site
+    echo "create directory - ${PATH_FOR_PROJECT}/site"
+    mkdir "${PATH_FOR_PROJECT}/site"
 
     echo 'create file style.css'
     create_style_file
@@ -184,7 +207,7 @@ else
     stop_all_running_containers
 
     echo 'start nginx container'
-    cd /home/dexk/letsencrypt && docker-compose up -d && docker ps
+    cd "$PATH_FOR_PROJECT" && docker-compose up -d && docker ps
 
     echo 'run staging command for new certificate'
     run_staging_command_for_new_certificate
@@ -194,6 +217,8 @@ else
 
     echo 'clean up staging artifacts'
     echo 'request a production certificate'
+    #request_a_production_certificate
+
     echo 'stop all running containers'
     #stop_all_running_containers
 
