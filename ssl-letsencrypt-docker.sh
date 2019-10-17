@@ -1,5 +1,23 @@
 #!/bin/bash -x
 
+# create project path
+PROJECT_NAME="letsencrypt"
+CURRENTLY_LOGGED_IN_USER="$(whoami)"
+PATH_FOR_PROJECT="/home/${CURRENTLY_LOGGED_IN_USER}/${PROJECT_NAME}"
+
+# there must be a version with and without www for each domain
+domainsForCertificationWithoutWWW=("example.io")
+domainsForCertificationWithWWW=("www.example.io")
+
+lengthOfArrayWithDomainsWithoutWWW="${#domainsForCertificationWithoutWWW[@]}"
+lengthOfArrayWithDomainsWithWWW="${#domainsForCertificationWithWWW[@]}"
+
+if [ $lengthOfArrayWithDomainsWithoutWWW -ne $lengthOfArrayWithDomainsWithWWW ]; then
+  echo 'the number of domains does not match'
+  echo 'exit from script'
+  exit 0
+fi
+
 # the function with the data to the file must be formatted in this way, otherwise it returns an error
 create_style_file () {
 cat > /home/dexk/letsencrypt/site/style.css << ENDOFFILE
@@ -75,6 +93,9 @@ ENDOFFILE
 }
 
 run_staging_command_for_new_certificate () {
+  local domainWithoutWWW=$1
+  local domainWithWWW=$2
+
   docker run -it --rm \
   -v /docker-volumes/etc/letsencrypt:/etc/letsencrypt \
   -v /docker-volumes/var/lib/letsencrypt:/var/lib/letsencrypt \
@@ -85,7 +106,7 @@ run_staging_command_for_new_certificate () {
   --register-unsafely-without-email --agree-tos \
   --webroot-path=/data/letsencrypt \
   --staging \
-  -d jakubgania.io -d www.jakubgania.io
+  -d "$domainWithoutWWW" -d "$domainWithWWW"
 }
 
 get_additional_information_about_certificates () {
@@ -174,7 +195,7 @@ else
     echo 'clean up staging artifacts'
     echo 'request a production certificate'
     echo 'stop all running containers'
-    stop_all_running_containers
+    #stop_all_running_containers
 
 fi
 
