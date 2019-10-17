@@ -98,6 +98,10 @@ certbot/certbot \
 certificates
 }
 
+stop_all_running_containers () {
+  cd /home/dexk/letsencrypt && docker stop $(docker ps -aq) && docker rm $(docker ps -aq)
+}
+
 CURRENT_DIRECTORY=$(pwd)
 FOLDER_NAME="letsencrypt"
 EXMP="${CURRENT_DIRECTORY}/${FOLDER_NAME}"
@@ -156,7 +160,7 @@ else
     docker ps
 
     echo 'stop all running containers'
-    cd /home/dexk/letsencrypt && docker stop $(docker ps -aq) && docker rm $(docker ps -aq)
+    stop_all_running_containers
 
     echo 'start nginx container'
     cd /home/dexk/letsencrypt && docker-compose up -d && docker ps
@@ -170,7 +174,7 @@ else
     echo 'clean up staging artifacts'
     echo 'request a production certificate'
     echo 'stop all running containers'
-    # create function
+    stop_all_running_containers
 
 fi
 
