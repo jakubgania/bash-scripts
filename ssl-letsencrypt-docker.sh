@@ -1,6 +1,6 @@
 #!/bin/bash -x
 
-EMAIL="example@email.com"
+EMAIL="example@domain.io"
 PROJECT_NAME="letsencrypt"
 
 echo 'checking if the docker is installed'
@@ -16,9 +16,10 @@ CURRENTLY_LOGGED_IN_USER="$(whoami)"
 PATH_FOR_PROJECT="/home/${CURRENTLY_LOGGED_IN_USER}/${PROJECT_NAME}"
 
 # there must be a version with and without www for each domain
-domainsForCertificationWithoutWWW=("example.io")
-domainsForCertificationWithWWW=("www.example.io")
+domainsForCertificationWithoutWWW=("yourcity.io")
+domainsForCertificationWithWWW=("www.yourcity.io")
 
+# array length
 lengthOfArrayWithDomainsWithoutWWW="${#domainsForCertificationWithoutWWW[@]}"
 lengthOfArrayWithDomainsWithWWW="${#domainsForCertificationWithWWW[@]}"
 
@@ -210,7 +211,12 @@ else
     cd "$PATH_FOR_PROJECT" && docker-compose up -d && docker ps
 
     echo 'run staging command for new certificate'
-    run_staging_command_for_new_certificate
+    # run_staging_command_for_new_certificate
+
+    for (( index=1; index<="${#domainsForCertificationWithoutWWW[@]}"; index++ ))
+    do
+      run_staging_command_for_new_certificate "${domainsForCertificationWithoutWWW[$index]}" "${domainsForCertificationWithWWW[$index]}" "$EMAIL" 
+    done
 
     echo 'get some additional information about certificates'
     get_additional_information_about_certificates
@@ -223,4 +229,3 @@ else
     #stop_all_running_containers
 
 fi
-
