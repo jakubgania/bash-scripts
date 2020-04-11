@@ -3,13 +3,16 @@
 EMAIL="example@domain.io"
 PROJECT_NAME="letsencrypt"
 
+
 echo 'checking if the docker is installed'
+
 if [ ! -x "$(command -v docker)" ]; then
   echo 'docker is not installed'
   exit 0
 
 # print docker version
 docker -v
+
 
 # create project path
 CURRENTLY_LOGGED_IN_USER="$(whoami)"
@@ -35,6 +38,7 @@ cat > "${PATH_FOR_PROJECT}/site/style.css" << ENDOFFILE
 style
 ENDOFFILE
 }
+
 
 # the function with the data to the file must be formatted in this way, otherwise it returns an error
 create_index_file () {
