@@ -3,7 +3,6 @@
 EMAIL="example@domain.io"
 PROJECT_NAME="letsencrypt"
 
-
 echo 'checking if the docker is installed'
 
 if [ ! -x "$(command -v docker)" ]; then
@@ -12,7 +11,6 @@ if [ ! -x "$(command -v docker)" ]; then
 
 # print docker version
 docker -v
-
 
 # create project path
 CURRENTLY_LOGGED_IN_USER="$(whoami)"
