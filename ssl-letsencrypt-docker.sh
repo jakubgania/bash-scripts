@@ -37,7 +37,6 @@ style
 ENDOFFILE
 }
 
-
 # the function with the data to the file must be formatted in this way, otherwise it returns an error
 create_index_file () {
 cat > "${PATH_FOR_PROJECT}/site/index.html" << ENDOFFILE
