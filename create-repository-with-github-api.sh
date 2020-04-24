@@ -4,11 +4,10 @@
 
 # step 1: name of the remote repo. Enter a SINGLE WORD ..or...separate with hyphens
 echo "What name do you want to give your remote repo?"
-# read REPO_NAME
 
+# read REPO_NAME
 # echo "Enter a repo description: "
 # read DESCRIPTION
-
 # step 2:  the local project folder path
 # echo "what is the absolute path to your local project directory?"
 # read PROJECT_PATH
