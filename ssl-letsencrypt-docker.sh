@@ -157,10 +157,9 @@ FOLDER_NAME="letsencrypt"
 EXMP="${CURRENT_DIRECTORY}/${FOLDER_NAME}"
 
 echo "${EXMP}"
-
 echo 'start script - docker-letsencrypt.sh'
-
 echo 'start command - docker-compose down'
+
 # docker compose down
 echo 'end command - dcoker-compose down'
 
