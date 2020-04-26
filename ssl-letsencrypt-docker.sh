@@ -168,7 +168,6 @@ echo 'check directory exists - /docker-volumes'
 
 if [ -d "/docker-volumes" ]; then
     echo "exsits"
-
     echo 'remove directory - /docker-columes'
     rm -rf /docker-volumes
 else
