@@ -226,5 +226,4 @@ else
 
     echo 'stop all running containers'
     #stop_all_running_containers
-
 fi
