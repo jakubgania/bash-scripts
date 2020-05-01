@@ -175,8 +175,7 @@ else
 fi
 
 if [ -d "$PATH_FOR_PROJECT" ]; then
-    echo "directory exists"
-
+    echo "directory exists
     echo "remove directory - ${PATH_FOR_PROJECT}"
     rm -rf "${PATH_FOR_PROJECT}"
 else
